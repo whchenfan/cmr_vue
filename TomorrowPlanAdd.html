@@ -1,0 +1,71 @@
+<!doctype html>
+<html>
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=utf-8" >
+<meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,initial-scale=1.0,user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="format-detection" content="telephone=no">
+<meta name="format-detection" content="email=no">
+<link rel="stylesheet" type="text/css" href="style/comm.css" />
+<link rel="stylesheet" type="text/css" href="style/TomorrowPlan.css" />
+<script type="text/javascript" src="./js/jquery-2.1.4.min.js"></script>
+<script type="text/javascript" src="./js/vue.js"></script>
+<title>添加明日计划</title>
+</head>
+<body class="bg_f5f5f9">
+<div id="tomorrow">
+    <header class="comm-header">
+        <div class="div"><h1><a href="javascript:history.back();" class="back"><i></i></a>添加明日计划</h1></div>
+    </header> 
+    <section class="add_cont">
+        <textarea class="add_area" placeholder="请输入您明日计划的内容" name="remark"></textarea>
+        <button @click="submitFn()" type="button" class="btn-blur">添加数据</button>
+    </section>
+</div>
+    <script type="text/javascript" src="./js/comm.js"></script>
+    <script type="text/javascript">
+        $(function(){
+            document.getElementsByClassName("add_cont")[0].style.height=$(window).height()-$(".comm-header").height()+"px";
+            $(window).resize(function(){
+                document.getElementsByClassName("add_cont")[0].style.height=$(window).height()-$(".comm-header").height()+"px";
+            });
+            var user;
+            new Vue({
+                beforeCreate(){
+                    if(!sessionStorage.user){
+                        window.history.href="login.html";
+                    }
+                    user=JSON.parse(sessionStorage.user);
+                },
+                methods:{
+                    submitFn(){
+                        var _value=document.querySelector('textarea[name="remark"]').value;
+                        if(!_value){
+                            AlertFn({"cont":"明日计划内容不能为空"});
+                            return false;
+                        }
+                        var params={
+                            "remark":_value,
+                            "user_id":user.id,
+                            "type":"submit"
+                         }
+                         ajaxComm({
+                            url:"TomorrowPlan.php",
+                            params:params,
+                            success:function(data){
+                                if(data.flg){
+                                AlertFn({"cont":"添加数据成功"});
+                                }else{
+                                    AlertFn({"cont":"添加数据失败"});
+                                }
+                            }
+                         })
+                    }  
+                }
+            }).$mount("#tomorrow")
+
+        });
+    </script>
+</body>
+</html>

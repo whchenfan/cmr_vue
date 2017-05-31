@@ -1,0 +1,51 @@
+﻿.select_list{ border-top:1px solid #f6f6f6; border-bottom:1px solid #f6f6f6;background:#FFF; height:2.134rem}
+.select_list .sel{ text-align:center; float:left;  width:33%; font-size:0.733rem; color:#333333; position:relative; padding:0.667rem 0;}
+.select_list .sel>p{height:0.8rem; line-height:0.8rem; text-align:center}
+.select_list .sel span{ display:inline-block; padding-right:0.4rem;}
+.select_list .sel i{ border-left:1px solid #e3e3e3; border-bottom:1px solid #e3e3e3; height:0.4rem; width:0.4rem; display:inline-block; transform:rotate(-45deg); -webkit-transform:rotate(-45deg); position:relative; top:-0.15rem;}
+.select_list .sel:nth-child(2){border-left:1px solid #fafafa;border-right:1px solid #fafafa; width:34%; box-sizing:border-box; -webkit-box-sizing:border-box;}
+.select_list .sel select{  background:#fff; width:100%; position:absolute; left:0; top:0.3rem; z-index:2;height:1.2rem; line-height:1.2rem; border:0; opacity:0; padding:0.667rem 0;}
+.select_list .sel li{ border-bottom:1px solid #f6f6f6; display:block;  padding:0.2rem 0.8rem 0.2rem 0;}
+.select_list .sel a{ color:#333;}
+.cus_inf_list{padding-top:0.467rem;}
+.cus_inf_list dl{ margin-bottom:0.467rem; background:#FFF; border-top:1px solid #f2f2f4;  border-bottom:1px solid #f2f2f4;}
+.cus_inf_list dl h2{ font-size:0.667rem; line-height:1.667rem; height:1.667rem;}
+.cus_inf_list dl span{ display:inline-block}
+.cus_inf_list dl dt h2{font-size:0.8rem; }
+.cus_inf_list dl dt{ padding-top:0.2rem;}
+.cus_inf_list dl h2 em{ color:#333333}
+.cus_inf_list dl dt h2 i{ color:#839dae}
+.cus_inf_list dl  h2 i { color:#666}
+.cus_inf_list dl .cont{border-bottom:1px solid #f2f2f4; padding:0.4rem 0; line-height:1.6rem; font-size:0.8rem;}
+.cus_inf_list dl .comp_icon{ height:0.8rem; width:0.8rem; background:url(../images/comp_icon.png) no-repeat center center/0.8rem; margin-right:0.2rem; display:inline-block; vertical-align:middle;color:#333; }
+.cus_inf_list a{color:#333;}
+.deatails li{  font-size:0.8rem; color:#333; border-bottom:0.07rem dashed #f5f5f5; line-height:2.2rem; min-height:2.2rem; position:relative; padding-left:6.4rem; padding-right:0.4rem;}
+.deatails li label{ width:6rem; position:absolute; top:0; left:0.4rem; height:2.2rem; color:#999999}
+.deatails li .a_pic{ color:#839dae}
+.deatails li input{ width:100%; background-color:transparent; padding:0.4rem 0; line-height:1.4rem; height:1.4rem; border:0; color:#333; font-size:0.8rem}
+.deatails li input::-webkit-input-placeholder{color:#333;}
+.deatails li input::input-placeholder{color:#333;}
+.deatails .btn-file{ width:2rem; height:1.1rem; line-height:1.1rem; font-size:0.733rem; color:#c6d4dc; background:#FFF; border:1px solid #c6d4dc; border-radius:0.2rem; -webkit-border-radius:0.2rem; margin-top:0.5rem;}
+.pdb3{ padding-bottom:3rem;}
+.deatails-add li label{font-size:.733rem; color:#333;}
+.deatails-add li label span{ position:relative; margin-left:-0.3rem;top:.3rem; font-size:1rem; color:#ff4242; font-family:Arial, sans-serif}
+.deatails .sel{ position:relative; width:100%; padding: 0.4rem 0;line-height: 1.4rem; height: 1.4rem;}
+.deatails .sel p{ padding-right:2.2rem; position:relative;}
+.deatails .sel p span{ color:#333;}
+.deatails .sel p .down{  border-left:1px solid #333; border-bottom:1px solid #333; height:0.4rem; width:0.4rem; display:inline-block; transform:rotate(-45deg); -webkit-transform:rotate(-45deg); position:absolute; right: 0; top:.4rem; }
+
+.deatails .sel .right{ position:absolute; top:0.8rem; right:0; border-right:1px solid #d8d8d8;border-top:1px solid #d8d8d8; height:0.8rem; width:0.8rem; transform:rotate(45deg); -webkit-transform:rotate(45deg)}
+.deatails .sel select{ position:absolute; width:100%; top:0.4rem; left:0; height:1.4rem; opacity:0;}
+
+
+
+
+
+
+
+
+
+
+
+
+

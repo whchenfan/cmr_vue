@@ -1,0 +1,166 @@
+<!doctype html>
+<html>
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=utf-8" >
+<meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,initial-scale=1.0,user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="format-detection" content="telephone=no">
+<meta name="format-detection" content="email=no">
+<link rel="stylesheet" type="text/css" href="style/comm.css" />
+<link rel="stylesheet" type="text/css" href="style/monthlyPlan.css" />
+<script type="text/javascript" src="./js/jquery-2.1.4.min.js"></script>
+<script type="text/javascript" src="./js/vue.js"></script>
+<title>修改月工作计划</title>
+</head>
+<body >
+<div id="monthly">
+    <header class="comm-header">
+    	<div class="div"><h1><a href="javascript:history.back();" class="back"><i></i></a>修改月工作计划</a></h1></div>
+    </header> 
+    <section class="pdb3">
+    	<form action="" method="post">
+    	<ul class="deatails  pdlr1 bg_FFF">
+    		<li>
+            	<label>所需部门</label>
+                
+            </li>
+        </ul>
+        <div class="pdtb_5">
+        <ul class="clearfix number_ul bg_FFF">
+        	<li class=" w_50 border-right"><label>计划洽谈量</label><em  class="f_c">{{data.planned_volume}}</em></li>
+            <li class="w_50"><label>实际洽谈量</label><em class="f_c"><input type="number" name="actual_volume" class="w_100" :placeholder="data.actual_volume" /></em></li>
+            <li><label>本月完成</label>
+            	<div class="bar"><div class="bar_progress" :style="'width:'+parseInt(100*data.actual_volume/data.planned_volume)>100?100:parseInt(100*data.actual_volume/data.planned_volume)+'%;'"></div></div>
+                <i class="bar_number">{{parseInt(100*data.actual_volume/data.planned_volume)}}%</i>
+            </li>
+        </ul>
+        </div>
+        
+        <div class="pdtb_5">
+        <ul class="clearfix number_ul bg_FFF blue_color">
+        	<li class=" w_50 "><label>计划签约量</label><em  class="f_c ">{{data.planned_quantity}}</em></li>
+            <li class="w_50 "><!--这个是用来占位置的，没有撒了用--></li>
+        	<li class=" w_50 border-right">
+            	<label>实际签约量</label><em  class="f_c ">{{data.actual_quantity}}</em>
+            </li>
+            <li class="w_50 pdl_1">
+            	<i class="fl w_25 ">直营</i>
+                <input type="number" name="not_channel" class="fl w_25 f_c" :placeholder="data.not_channel" />
+                <i class="fl w_25 f_c">渠道</i>
+                <input type="te" name="channel" class="fl w_25 f_c inp" :placeholder="data.channel" />
+            </li>
+            <li><label>本月完成</label>
+            	<div class="bar"><div class="bar_progress" :style="'width:'+parseInt(100*data.actual_quantity/data.planned_quantity)>100?100:parseInt(100*data.actual_quantity/data.planned_quantity)+'%;'"></div></div>
+                <i class="bar_number">{{parseInt(100*data.actual_quantity/data.planned_quantity)}}%</i>
+            </li>
+        </ul>
+        </div>
+        
+        <ul class="deatails  pdlr1 border_top bg_FFF">
+        	<li>
+            	<label>月报编号</label>
+                <div>{{data.monthly_id}}</div>
+            </li>
+        	
+            <li>
+            	<label>创建时间</label>
+                <div>{{formTime(data.create_time+"000")}}</div>
+            </li>
+            <li>
+            	<label>备注</label>
+                <div>{{data.remark}}</div>
+            </li>
+        </ul>
+        <button v-if="flg" type="button" @click="updateFn()" class="btn-blur">修改</button>
+        </form>
+    </section>
+</div>
+    
+    <script type="text/javascript" src="./js/comm.js"></script>
+    <script type="text/javascript">
+		$(function(){
+            var user,
+                id=GetQueryString("id"),
+                params={};
+			new Vue({
+                data:{
+                    data:[],
+                    flg:false
+                },beforeCreate(){
+                    user=sessionStorage.getItem("user");
+                    if(!user){
+                        window.location.href="login.html";
+                    }else{
+                        user=JSON.parse(user);
+                    }
+                    if(!id){
+                        AlertFn({"cont":"您的链接地址有问题。",fn:function(){
+                            window.location.href="monthlyPlan.html";
+                        }})
+                    }
+                },mounted(){
+                    var _this=this;
+                    ajaxComm({
+                        url:"monthlyPlan.php",
+                        params:{id:id,type:"select"},
+                        success(data){
+                            console.log(data);
+                            _this.$data.data=data;
+                            _this.$data.flg=data.user_id==user.id;
+                        }
+                    })
+                },methods:{
+                    formTime(a){
+                      var d=new Date();
+                      d.setTime(a);
+                      return d.getFullYear()+'-'+(d.getMonth()+1>9?(d.getMonth()+1):('0'+(d.getMonth()+1)))+'-'+(d.getDate()>9?d.getDate():('0'+d.getDate()));
+                    },
+                    updateFn(){
+                        var _this=this,
+                        _actual=document.querySelector('input[name="actual_volume"]'),
+                        _channel=document.querySelector('input[name="channel"]'),
+                        _not_channel=document.querySelector('input[name="not_channel"]'),
+                        params={};
+
+                        if(_actual.value&&parseInt(_actual.value)){
+                            params['actual_volume']=parseInt(_actual.value);
+                        }else{
+                           params['actual_volume']=_this.$data.data.actual_volume; 
+                        }
+                        if(_channel.value&&parseInt(_channel.value)){
+                            params['channel']=parseInt(_channel.value);
+                        }else{
+                           params['channel']=_this.$data.data.channel; 
+                        }
+                        if(_not_channel.value&&parseInt(_not_channel.value)){
+                            params['not_channel']=parseInt(_not_channel.value);
+                        }else{
+                           params['not_channel']=_this.$data.data.not_channel; 
+                        }
+                        params["id"]=id;
+                        params["type"]="update";
+                      
+                        ajaxComm({
+                            url:"monthlyPlan.php",
+                            params:params,
+                            success(data){
+                               if(data.flg){
+                                    AlertFn({"cont":"修改数据成功。",fn:function(){window.location.reload();}});
+                               }else{
+                                    AlertFn({"cont":"修改数据失败"});
+                               }
+                            }
+
+                        })
+
+                    }
+                }
+
+
+            }).$mount("#monthly");
+		});
+	</script>
+</body>
+</html>
+

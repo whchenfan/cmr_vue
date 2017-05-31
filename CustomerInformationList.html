@@ -1,0 +1,87 @@
+<!doctype html>
+<html>
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=utf-8" >
+<meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,initial-scale=1.0,user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="format-detection" content="telephone=no">
+<meta name="format-detection" content="email=no">
+<link rel="stylesheet" type="text/css" href="style/comm.css" />
+<link rel="stylesheet" type="text/css" href="style/CustomerInformation.css" />
+<script type="text/javascript" src="./js/jquery-2.1.4.min.js"></script>
+<script type="text/javascript" src="./js/vue.js"></script>
+<title>客户信息</title>
+</head>
+<body>
+  <div id="demo">
+    <header class="comm-header">
+    	<div class="div"><h1><a href="javascript:history.back();" class="back"><i></i></a>客户信息<a href="CustomerInformationAdd.html" class="add"><i></i></a></h1></div>
+    </header> 
+    <section>
+    	<div class="cus_infor_search pdlr1 pdtb_5 bg_FFF">
+        	<div class="comm_search ">
+            	<input class="inp" type="text" name="search" id="search" value="" placeholder="输入添加人/公司名称" />
+                <button @click="searchFn()" class="icon comm_icon_search" type="button"></button>
+            </div>
+        </div>
+        <nav class="select_list clearfix">
+        	<div class="sel" id="province">
+            	<p><span>请选择省份</span><i></i></p>
+                <select name="province" @change="proCityDis($event)">
+                	<option value="0">请选择省份</option>
+                   
+                </select>
+            </div>
+            <div class="sel" id="city">
+            	<p><span>请选择城市</span><i></i></p>
+                <select name="city" @change="proCityDis($event)">
+                	<option value="0">请选择城市</option>
+                    
+                </select>
+            </div>
+            <div class="sel" id="district">
+            	<p><span>请选择区县</span><i></i></p>
+                <select name="district" @change="proCityDis($event)">
+                	<option value="0">请选择区县</option>
+                </select>
+            </div>
+        </nav>
+    	<aside class="cus_inf_list">
+           <div v-if="data&&data.length>0">
+            <a v-for="v in data" :href="'CustomerInformationDetails.html?id='+v.id+'&user='+v.user_id">
+            <dl class="pdlr1">
+            	<dt>
+                	<h2 class="clearfix">
+                    	<span class="fr"><em>客户来源：</em><i>{{v.source==1?'网路推广':'独立开发'}}</i></span>
+                    	<span><em>客户：</em><i>{{v.contact_name}}</i></span>
+                    </h2>
+                    <div class="cont">
+                    		<i class="comp_icon"></i>{{v.company_name}}
+                    </div>
+                </dt>
+                <dd>
+                	<h2 class="clearfix">
+                    	<span class="fr"><em>上次修改时间：</em><i>{{formTime(v.update_time||v.create_time+'000')}}</i></span>
+                    	<span ><em>添加人：</em><i>{{v.user_name}}</i></span>
+                    </h2>
+                </dd>
+            </dl>
+            </a>
+            </div>
+            <div v-else  class="tp_add">
+                <a href="CustomerInformationAdd.html">
+                    <i class="icon_shu"></i>
+                      <p>添加月计划</p>
+                </a>
+           </div>
+        </aside>
+    </section>
+    </div>
+    
+    <script type="text/javascript" src="./js/comm.js"></script>
+    <script type="text/javascript" src="./js/city.js"></script>
+    <script type="text/javascript" src="./js/CustomerInformationList.js"></script>
+    
+</body>
+</html>

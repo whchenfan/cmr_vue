@@ -1,0 +1,16 @@
+﻿.colleague>nav{}
+
+.colleague .sel_nav{ border-top:1px solid #f6f6f6; border-bottom:1px solid #f6f6f6;background:#FFF; height:2.134rem}
+.colleague .sel{ text-align:center; float:left;  width:50%; font-size:0.733rem; color:#333333; position:relative; padding:0.667rem 0;}
+.colleague .sel>p{height:0.8rem; line-height:0.8rem; text-align:center}
+.colleague .sel span{ display:block; padding-right:0.9rem; overflow:hidden;text-overflow: ellipsis;white-space: nowrap;}
+.colleague .sel i{ border-left:1px solid #e3e3e3; border-bottom:1px solid #e3e3e3; height:0.4rem; width:0.4rem; display:inline-block; transform:rotate(-45deg); -webkit-transform:rotate(-45deg); position:absolute; top:0.667rem; right:.5rem;}
+.colleague .sel:nth-child(2){border-left:1px solid #fafafa; width:50%; box-sizing:border-box; -webkit-box-sizing:border-box;}
+.colleague .sel select{  background:#fff; width:100%; position:absolute; left:0; top:0.3rem; z-index:2;height:1.2rem; line-height:1.2rem; border:0; opacity:0; padding:0.667rem 0;}
+.colleague .sel li{ border-bottom:1px solid #f6f6f6; display:block;  padding:0.2rem 0.8rem 0.2rem 0;}
+.colleague .sel a{ color:#333;}
+
+.colleague .colleague_list{ margin-top:.5rem; font-size:.8rem;}
+.colleague .colleague_list>table{ width:100%; border-collapse:collapse}
+.colleague .colleague_list>table th,.colleague .colleague_list>table td{ line-height:1.4rem; border:1px solid #f6f6f6; text-align:center; padding:.3rem 0;}
+.colleague .colleague_list>table th{ font-size:.9rem; font-weight:normal; padding:.5rem 0;}

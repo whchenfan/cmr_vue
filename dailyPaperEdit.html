@@ -1,0 +1,94 @@
+<!doctype html>
+<html>
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=utf-8" >
+<meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,initial-scale=1.0,user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="format-detection" content="telephone=no">
+<meta name="format-detection" content="email=no">
+<link rel="stylesheet" type="text/css" href="style/comm.css" />
+<link rel="stylesheet" type="text/css" href="style/dailyPaper.css" />
+<script type="text/javascript" src="./js/jquery-2.1.4.min.js"></script>
+<script type="text/javascript" src="./js/vue.js"></script>
+<title>工作日报</title>
+</head>
+<body class="bg_FFF">
+<div id="daily">
+    <header class="comm-header">
+        <div class="div"><h1><a href="javascript:history.back();" class="back"><i></i></a>工作日报</h1></div>
+    </header> 
+    <section class="deatails deatails-add pdlr1 pdb3">
+        <div v-if="!data||!data.id" class="null-data" >
+            没有查到相关数据 
+        </div>
+        <div v-else-if="user_id!=data.user_id" class="null-data">
+                您无权修改该数据
+        </div>
+        <div v-else>
+            <ul>
+                <li>
+                    <label><span>*</span>合作机构</label>
+                    <input class="inp" name="company_name" type="text" value="" :placeholder="data.company_name||''" />
+                </li>
+                <li>
+                    <label><span>*</span>业务线</label>
+                    <input name="service_line" class="inp" type="text" value="" :placeholder="data.service_line||''" />
+                </li>
+                <li>
+                    <label><span>*</span>进展情况</label>
+                    <input name="progress_situation" class="inp" type="text" value="" :placeholder="data.progress_situation||''" />
+                </li>
+                <li>
+                    <label><span>*</span>沟通要点</label>
+                    <input class="inp" name="communication_points" type="text" value="" :placeholder="data.communication_points||''" />
+                </li>
+                
+                <li>
+                    <label><span>*</span>沟通形式</label>
+                    <div class="sel">
+                            <p><span v-if="data.contract_type==1">电话</span><span v-else-if="data.contract_type==2">QQ</span><span v-else-if="data.contract_type==3">微信</span><span v-else-if="data.contract_type==4">邮箱</span><span v-else>请选择沟通形式</span><i class="down"></i></p>
+                            <select @change="selFn($event)" name="contract_type">
+                                <option value="">请选择沟通形式</option>
+                                <option value="1" :selected="data.contract_type==1?true:false">电话</option>
+                                <option value="2" :selected="data.contract_type==2?true:false">QQ</option>
+                                <option value="3" :selected="data.contract_type==3?true:false">微信</option>
+                                <option value="4" :selected="data.contract_type==4?true:false">邮箱</option>
+                            </select>
+                    </div>
+                </li>
+                <li>
+                    <label><span>*</span>客户来源</label>
+                    <div class="sel">
+                            <p><span v-if="data.customer_source==1">网络推广</span><span v-else-if="data.customer_source==2">独立开发</span><span v-else-if="data.customer_source==3">合作结构</span><span v-else>请选择客户来源</span><i class="down"></i></p>
+                            <select @change="selFn($event)" name="customer_source">
+                                <option value="">请选择客户来源</option>
+                                <option value="1" :selected="data.customer_source==1?true:false">网络推广</option>
+                                <option value="2" :selected="data.customer_source==2?true:false">独立开发</option>
+                                <option value="3" :selected="data.customer_source==3?true:false">合作结构</option>
+                               
+                            </select>
+                    </div>
+                </li>
+                <li>
+                    <label><span>*</span>联系方式</label>
+                    <input class="inp" name="cantract_type" type="text" value="" :placeholder="data.cantract_type||''" />
+                </li>
+                 
+                
+                <li>
+                    <label><span>*</span>客户对接人</label>
+                    <input class="inp" type="text" value="" :placeholder="data.customers_person||''" name="customers_person" />
+                </li>
+            </ul>
+             <button type="button" @click="updateFn()" class="btn-blur">修改</button>
+        </div>
+        
+    </section>
+</div>
+    <script type="text/javascript" src="./js/comm.js"></script>
+    <script type="text/javascript" src="./js/dailyEdit.js">
+        
+    </script>
+</body>
+</html>

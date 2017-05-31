@@ -1,0 +1,101 @@
+<!doctype html>
+<html>
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=utf-8" >
+<meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,initial-scale=1.0,user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="format-detection" content="telephone=no">
+<meta name="format-detection" content="email=no">
+<link rel="stylesheet" type="text/css" href="style/comm.css" />
+<link rel="stylesheet" type="text/css" href="style/login.css" />
+<script type="text/javascript" src="./js/jquery-2.1.4.min.js"></script>
+<script type="text/javascript" src="./js/vue.js"></script>
+<title>登录</title>
+</head>
+<body class="bg_FFF">
+  <div id="login">
+    <header class="comm-header">
+    	<div class="div"><h1>登录</h1></div>
+    </header> 
+    <section class="login pdt_5">
+    	<form action="" method="post">
+        	<ul>
+            	<li class="pdl1_6">
+                	<i class="user_icon"></i>
+                    <div class="inp_div">
+                    	<input class="inp" placeholder="会员名" type="text" name="user" :value="user" />
+                    </div>
+                </li>
+                <li class="pdl1_6">
+                	<i class="lock_icon"></i>
+                    <div class="inp_div rel">
+                    	<input class="inp" placeholder="登录密码" type="password" name="pass" :value="pass" />
+                        <em class="yan_icon" @click="showPass($event)"></em>
+                    </div>
+                </li>
+            </ul>
+            <div class="pdlr1 pdt1">
+            	<button type="button" class="btn_login" @click="loginFn">登录</button>
+                <a class="forget_pas" href="forgetPas.html">忘记密码?</a>
+            </div>
+        </form>
+    </section>
+    </div>
+    <script type="text/javascript" src="./js/comm.js"></script>
+    <script type="text/javascript">
+      var app_vue;
+       $(function(){
+          app_vue=new Vue({
+             el: '#login',
+             data:{"user":"admin","pass":"admin123456"},
+             beforeCreate:function(){
+                loading();
+             },
+             mounted:function(){
+               loadingRemove();
+             },
+             methods:{//定义方法
+                showPass:function(event){//显示隐藏密码
+                 var inp=event.target.previousElementSibling||event.target.previousSibling;
+                    inp.getAttribute("type")=='password'?inp.setAttribute("type","text"):inp.setAttribute("type","password");
+                },
+                loginFn:function(){
+                    //登录
+                   var user=document.querySelector('input[name="user"]'),
+                       pass=document.querySelector('input[name="pass"]');
+                   if(!user.value){user.focus();}
+                   if(!pass.value){pass.focus();}
+                   if(pass.value&&user.value){
+                     //登录成功
+                     loading();
+                     ajaxComm({
+                        "url":"login.php",
+                        "params":{"user":user.value,"pass":pass.value},
+                        "success":function(data){
+                          
+                            if(data.flg){
+                                sessionStorage.setItem("user",JSON.stringify(data.user));
+                              window.location.href="page.html";
+                            }else{
+                                AlertFn({cont:"用户名或密码出错"});
+                            }
+                        },
+                        "error":function(htp){
+                             loadingRemove();
+                             console.log(htp);
+                        }
+                     })
+                      
+                   }  
+                }
+             }
+
+          })
+
+       }) 
+
+		
+    </script>
+</body>
+</html>

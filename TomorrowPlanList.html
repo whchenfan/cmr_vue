@@ -1,0 +1,153 @@
+<!doctype html>
+<html>
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=utf-8" >
+<meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,initial-scale=1.0,user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="format-detection" content="telephone=no">
+<meta name="format-detection" content="email=no">
+<link rel="stylesheet" type="text/css" href="style/comm.css" />
+<link rel="stylesheet" type="text/css" href="style/TomorrowPlan.css" />
+<script type="text/javascript" src="./js/jquery-2.1.4.min.js"></script>
+<script type="text/javascript" src="./js/vue.js"></script>
+<title>明日计划</title>
+</head>
+<body>
+<div id="tomorrow">
+    <header class="comm-header">
+        <div class="div"><h1><a href="javascript:history.back();" class="back"><i></i></a>明日计划<a @click.prevent="addFn()" href="TomorrowPlanAdd.html" class="add"><i></i></a></h1></div>
+    </header> 
+    <section :class="power!=1?'list_lead':'list'">
+      <div class="tp_add" v-if="!data||!data.length"> 
+        <a href="TomorrowPlanAdd.html">
+          <i class="icon_shu"></i>
+            <p>添加明日计划</p>
+        </a>
+      </div>
+      <div v-else-if="power==1">
+        <ul>
+            <li v-for="value in data">
+                <a :href="'TomorrowPlanDeatails.html?id='+value.id">
+                <h2><i class="fr pj"></i><span><i class="icon_t"></i>{{formTime(value.create_time)}}</span></h2>
+                <div class="cont">{{value.remark}}</div>
+                </a>
+            </li>
+        </ul>
+      </div>
+      <div v-else>  
+      <dl v-for="(value,key) in data">
+            <dt v-if="!(key&&formTime(value.create_time)==formTime(data[key-1].create_time))"><i class="icon_t"></i>{{formTime(value.create_time)}}</dt>
+            <dd>
+                <ul>
+                    <li>
+                        <a :href="'TomorrowPlanDeatails.html?id='+value.id">
+                            <h2><i class="fr pj"></i><span><i class="person"></i>{{value.user_name}}</span></h2>
+                            <p>{{value.remark}}</p>
+                        </a>
+                    </li>
+                </ul>
+            </dd>
+      </dl>
+      </div>
+      
+    </section>
+</div>
+    <script type="text/javascript" src="./js/comm.js"></script>
+    <script type="text/javascript">
+        $(function(){
+            var user,params={},pageFlag=true;
+            new Vue({
+                data:{
+                    index:1,
+                    maxPage:0,
+                    data:[],
+                    power:1
+                },
+                beforeCreate(){
+                    if(!sessionStorage.getItem("user")){
+                        window.location.href="login.html";
+                    }
+                    loading();
+                    user=JSON.parse(sessionStorage.getItem("user"));
+                },
+                mounted(){
+                    var _this=this;
+                    params["user_id"]=user.id;
+                    _this.$data.power=user.power;
+                    ajaxComm({
+                        url:"TomorrowPlan.php",
+                        params:{user_id:user.id},
+                        success(data){
+                            console.log(data.sql);
+                            loadingRemove();
+                            _this.$data.power=user.power;
+                            _this.$data.data=data.data||[];
+                            _this.$data.index=data.index||1;
+                            _this.$data.maxPage=data.maxPage||0;
+                            _this.pageFn();
+                        }
+
+                    })
+                },
+                methods:{
+                    addFn(){
+                        loading();
+                        ajaxComm({
+                           url:"TomorrowPlan.php",
+                           params:{"type":"selectAdd","user_id":user.id},
+                           success(data){
+                              if(data.flg){
+                                window.location.href="TomorrowPlanDeatails.html?id="+data.id;
+                              }else{
+                                 window.location.href="TomorrowPlanAdd.html";
+                              }
+                           }
+                        })
+                    },
+                    formTime(a){
+                      var d=new Date();
+                              d.setTime(a*1000);
+                              return d.getFullYear()+'-'+(d.getMonth()+1>9?(d.getMonth()+1):('0'+(d.getMonth()+1)))+'-'+(d.getDate()>9?d.getDate():('0'+d.getDate()));
+                    },
+                    pageFn:function(){
+                        var _this=this;
+                          $(window).scroll(function(){
+                              if(pageFlag&&($(window).height()+$(window).scrollTop()>=$("body").outerHeight(true))){
+                                  pageFlag=false;
+                                  _this.$data.index++;
+                                  if(_this.$data.index>_this.$data.maxPage)return false;
+                                  params["index"]=_this.$data.index;
+
+                                  loading();
+                                  ajaxComm({
+                                    url:'TomorrowPlan.php',
+                                    params:params,
+                                    success:function(listDate){
+                                     listDate.data.forEach(function(v){
+                                         _this.$data.data.push(v);
+                                     })
+                                      setTimeout(function(){
+                                        loadingRemove();
+                                        _this.$data.index=listDate.index
+                                        _this.$data.maxPage=listDate.maxPage
+                                        if(listDate.maxPage!=_this.$data.index){
+                                           pageFlag=true;
+                                         }
+                                      },0); 
+                                    }
+
+                                 });
+                              }
+                          })
+
+                    }
+                }
+
+
+            }).$mount("#tomorrow");
+
+        })
+    </script>
+</body>
+</html>

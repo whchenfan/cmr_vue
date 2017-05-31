@@ -1,0 +1,96 @@
+<!doctype html>
+<html>
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=utf-8" >
+<meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,initial-scale=1.0,user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="format-detection" content="telephone=no">
+<meta name="format-detection" content="email=no">
+<link rel="stylesheet" type="text/css" href="style/comm.css" />
+<script type="text/javascript" src="./js/jquery-2.1.4.min.js"></script>
+
+<script type="text/javascript" src="./js/vue.js"></script>
+
+<title>crm微信版</title>
+</head>
+<body >
+    <div id="demo">
+    <header class="comm-header">
+    	<div class="div"><h1><a href="javascript:history.back();" class="back"><i></i></a>CRM</h1></div>
+    </header> 
+    <section class="index">
+    	<ul class="clearfix">
+    		<li>
+            	<a :user_power="user.power" href="CustomerInformationList.html">
+            		<i class="icon icon_01"></i>
+                	<p>客户信息</p>
+                </a>
+            </li>
+            <li>
+            	<a href="dailyPaper.html">
+            		<i class="icon icon_02"></i>
+                	<p>日报</p>
+                </a>
+            </li>
+            <li>
+            	<a href="TomorrowPlanList.html">
+            		<i class="icon icon_03"></i>
+                	<p>明日计划</p>
+                </a>
+            </li>
+            <li>
+            	<a href="monthlyPlan.html">
+            		<i class="icon icon_04"></i>
+                	<p>月工作计划</p>
+                </a>
+            </li>
+            <li>
+            	<a href="#" @click.prevent="alertfn()">
+            		<i class="icon icon_05"></i>
+                	<p>审批日报</p>
+                </a>
+            </li>
+            <li>
+                <a href="colleague.html" @click.prevent="alertfn()">
+                    <i class="icon icon_07"></i>
+                    <p>审批明日计划</p>
+                </a>
+            </li>
+            <li>
+            	<a href="#" @click.prevent="alertfn()">
+            		<i class="icon icon_06"></i>
+                	<p>定位</p>
+                </a>
+            </li>
+            
+            
+    	</ul>
+    </section>
+    </div>
+    <script type="text/javascript" src="./js/comm.js"></script>
+    <script type="text/javascript">
+        $(function(){
+             var vue_demo=new Vue({
+                 data:{
+                     user:JSON.parse(sessionStorage.getItem("user"))
+                 },
+                 beforeCreate(){
+                    loading();
+                    //没有登录去登录页面
+                    if(!sessionStorage.getItem("user"))window.location.href="login.html";
+                 },
+                 mounted(){
+                   loadingRemove();
+                 },methods:{
+                    alertfn(){
+                        AlertFn({"cont":"该功能暂未开放，敬请期待。"});
+                    }
+                 }
+
+              }).$mount("#demo")   
+
+        })
+    </script>
+</body>
+</html>

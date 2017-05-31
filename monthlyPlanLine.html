@@ -1,0 +1,185 @@
+<!doctype html>
+<html>
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=utf-8" >
+<meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,initial-scale=1.0,user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="format-detection" content="telephone=no">
+<meta name="format-detection" content="email=no">
+<link rel="stylesheet" type="text/css" href="style/comm.css" />
+<link rel="stylesheet" type="text/css" href="style/monthlyPlan.css" />
+<script type="text/javascript" src="./js/jquery-2.1.4.min.js"></script>
+<script type="text/javascript" src="./js/vue.js"></script>
+<title>月工作计划</title>
+</head>
+<body>
+<div id="monthly">
+    <header class="comm-header">
+    	<div class="div"><h1><a href="javascript:history.back();" class="back"><i></i></a>月工作计划<a href="monthlyPlanEdit.html" class="comm-edit"></a></h1></div>
+    </header> 
+    <section>
+        <div v-if="data&&data.id">
+    	<ul class="deatails  pdlr1 bg_FFF">
+        	<li>
+            	<label>业务线</label>
+                <span>{{data.branch_name}}</span>
+            </li>
+            <li>
+                <label>月报主人</label>
+                <span>{{data.user_name}}</span>
+            </li>
+        </ul> 
+        <div class="par pdt_5">
+        	<ul>
+            	<li class="clearfix">
+                	<div class="circle">
+                    	<canvas id="amount" data-color="#ff6000" :data-percentum="(parseInt(data.actual_volume/data.planned_volume*10000))/10000"></canvas>
+                        <div class="cont">
+                        	<p>本月完成</p>
+                            <em>{{(parseInt(data.actual_volume/data.planned_volume*10000))/100}}%</em>
+                        </div>
+                    </div>
+                    <div class="name pdt1">
+                    	<p>计划洽谈量<em>{{data.planned_volume}}</em></p>
+                        <P>实际洽谈量<em>{{data.actual_volume}}</em></P>
+                    </div>
+                </li>
+                <li class="contract clearfix">
+                	<div class="circle ">
+                    	<canvas data-color="#4595f9" id="contract" :data-percentum="parseInt(data.actual_quantity/data.planned_quantity*10000)/10000"></canvas>
+                        <div class="cont contract">
+                        	<p>本月完成</p>
+                            <em>{{parseInt(data.actual_quantity/data.planned_quantity*10000)/100}}%</em>
+                        </div>
+                    </div>
+                    <div class="name">
+                    	<p>计划签约量<em>{{data.planned_quantity}}</em></p>
+                        <P>实际签约量<em>{{data.actual_quantity}}</em></P>
+                        <P>(<span>直营{{data.not_channel}}</span><span class="pdl1">渠道{{data.channel}}</span>) </P>
+                    </div>
+                </li>
+            </ul>
+        </div> 
+        </div> 
+        <div class="line-date">
+        	<ul>
+            	<li v-for="value in list">
+                	<label>{{value.user_name}}</label>
+                    <div class="cont">
+                    	<div class="line_bar">
+                        	<span class="line_bar_bg">
+                            	<i class="line_bar_date" :style="'width:'+(parseInt(value.actual_volume/value.planned_volume*10000)/100>100?100:parseInt(value.actual_volume/value.planned_volume*10000)/100)+'%'"></i>
+                            </span>
+                            <em>{{parseInt(value.actual_volume/value.planned_volume*100)}}%</em>
+                        </div>
+                        
+                        <p><span>计划洽谈量 {{value.planned_volume}}</span><span class="pdl1">实际洽谈量 {{value.actual_volume}}</span></p>
+                       
+                        <div class="line_bar blue_bar">
+                        	<span class="line_bar_bg">
+                            	<i class="line_bar_date" :style="'width:'+(parseInt(value.actual_quantity/value.planned_quantity*10000)/100>100?100:parseInt(value.actual_quantity/value.planned_quantity*10000)/100)+'%'"></i>
+                            </span>
+                            <em>{{parseInt(value.actual_quantity/value.planned_quantity*100)}}%</em>
+                        </div>
+                        <p><span>计划签约量 {{value.planned_quantity}}</span><span class="pdl1">实际签约量 {{value.actual_quantity}}</span><span> (直营{{value.not_channel}}   渠道{{value.channel}})</span></p>
+                       
+                    </div>
+                </li>  
+            </ul>
+        </div>
+    </section>
+</div>
+    <script type="text/javascript" src="./js/comm.js"></script>
+    <script type="text/javascript">
+		$(function(){
+			 var id=GetQueryString("id"),
+                 branch=GetQueryString("branch"),
+                 time=GetQueryString("time"),user;
+             new Vue({
+                data:{
+                    data:[],
+                    list:[],
+                    id:id
+                },
+                beforeCreate(){
+                    user=sessionStorage.getItem("user");
+                    if(!user){
+                        window.location.href="login.html";
+                    }
+                    user=JSON.parse(user);
+                },
+                mounted(){
+                    var _this=this;
+                    ajaxComm({
+                        url:"monthlyPlan.php",
+                        params:{"time":time,"branch":branch,"id":id,"type":"selectLine"},
+                        success:function(data){
+                            _this.$data.data=data.data;
+                            _this.$data.list=data.list;
+                          
+                        }
+                     });
+
+                },updated(){
+                   this.getCanvas();
+                },methods:{
+                    drawArea(obj){
+                        console.log(obj);
+                        var _obj=obj,
+                            context = _obj.getContext('2d'),
+                            fontS=fontSizeFn()*0.8,
+                            number=_obj.getAttribute("data-percentum"),
+                            color=_obj.getAttribute("data-color"),
+                            parent=_obj.parentNode,
+                            width=_obj.clientWidth;
+                            console.log(number);
+                        number=parseFloat(number)>100?100:number;
+                        _obj.height=width;
+                         _obj.width=width;
+                         context.clearRect(0,0,width,width);
+                        fontS=Math.ceil(fontS)%2==0?Math.ceil(fontS):Math.round(fontS);
+                        parent.style.cssText='border-width:'+fontS+'px;height:'+width+'px;width:'+width+'px';
+                        context.strokeStyle =color;
+                        context.lineWidth=fontS;
+                        r=Math.floor(width/2);
+                        context.arc(r, r,Math.floor(r-fontS/2), 0, Math.PI*2*number);
+                        context.stroke();
+                       
+                   },
+                   getCanvas(){
+                        var canvas=document.querySelectorAll("canvas");
+                        for(var i=0,maxl=canvas.length;i<maxl;i++){
+                           
+                            this.drawArea(canvas[i]);
+                        }
+                   }
+                } 
+             }).$mount("#monthly");
+
+             
+			/*
+			id 画布的id名称
+			lineColor 画布边线的颜色
+			number占的数量
+			*/
+			function draw(id,lineColor,number) {
+				var canvas = document.getElementById(id);
+				if (canvas == null) return false;
+				var context = canvas.getContext('2d');
+				var fontS=fontSizeFn()*0.8,
+					 parent=canvas.parentNode,
+					 width=canvas.clientWidth;
+					 
+				canvas.width=width;
+				canvas.height=width;
+				
+ 			}
+			draw("amount","#ff6000",0.75);
+			draw("contract","#4595f9",0.5);
+			
+		});
+	</script>
+</body>
+</html>
+

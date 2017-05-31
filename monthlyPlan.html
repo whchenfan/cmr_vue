@@ -1,0 +1,210 @@
+<!doctype html>
+<html>
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=utf-8" >
+<meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,initial-scale=1.0,user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="format-detection" content="telephone=no">
+<meta name="format-detection" content="email=no">
+<link rel="stylesheet" type="text/css" href="style/comm.css" />
+<link rel="stylesheet" type="text/css" href="style/monthlyPlan.css" />
+<script type="text/javascript" src="./js/jquery-2.1.4.min.js"></script>
+<script type="text/javascript" src="./js/vue.js"></script>
+<title>月工作计划</title>
+</head>
+<body>
+<div id="monthly">
+    <header class="comm-header">
+    	<div class="div"><h1><a href="javascript:history.back();" class="back"><i></i></a>月工作计划<a @click.prevent="addFn()" href="monthlyPlanAdd.html" class="add"><i></i></a></h1></div>
+    </header> 
+    <section class="monthly_plan">
+    	<nav class="bg_FFF">
+        	<div class="pdlr1 pdtb_5">
+            	<div class="comm_search">
+                    <input class="inp" type="text" name="search" value="" placeholder="日志主人/部门名称等">
+                    <button class="icon comm_icon_search" type="button" @click="searchFn()"></button>
+           		 </div>
+			</div>
+            <ul class="clearfix">
+                <li>
+                	<label>开始日期</label>
+                    <div class="name place_time">
+                    	<p><span>请选择</span><em class="time_inp"></em></p>
+                        <input @change="inpTime($event)" class="inp" type="date" name="startTime" value="">
+                    </div>
+                </li>
+                <li>
+                	<label>结束日期</label>
+                    <div class="name place_time">
+                    	<p><span>请选择</span><em class="time_inp"></em></p>
+                        <input class="inp" @change="inpTime($event)" name="endTime" type="date" value="">
+                    </div>
+                </li>
+            </ul>
+        </nav>
+        <div class="ul_list">
+        	<ul>
+                <li class="tp_add" v-if="!data||!data.length">
+                   <a href="monthlyPlanAdd.html">
+                    <i class="icon_shu"></i>
+                      <p>添加月计划</p>
+                  </a>
+                </li>
+                <li v-else v-for="value in data">
+					         <a :href="'monthlyPlanDetails.html?id='+value.id">         
+                        <h2 class="clearfix">
+                            <span class="fr">{{formTime(value.create_time)}}</span>
+                            <span><i class="icon_t"></i>创建日期</span>
+                       </h2>
+                       <div class="cont">
+                            <p class="clearfix">
+                                <span class="fr"><label>姓名：</label><i>{{value.user_name}}</i></span>
+                                <span ><label>日志编码：</label><i>{{value.monthly_id}}</i></span>
+                            </p>
+                            <p class="clearfix">
+                                <span class="fr"><label>计划签约量：</label><em class="f_1173ee">{{value.planned_quantity}}</em></span>
+                                <span ><label>计划洽谈量：</label><em class="f_ffa776">{{value.planned_volume}}</em></span>
+                            </p>
+                            <p class="clearfix">
+                                <span class="fr"><label>实际签约量：</label><em class="f_1173ee">{{value.actual_quantity}}</em></span>
+                                <span ><label>实际洽谈量：</label><em class="f_ffa776">{{value.actual_volume}}</em></span>
+                            </p>
+                       </div>
+                   </a>
+                   <button class="del" date-id="1">删除</button>
+                </li>
+               
+               
+            </ul>
+        </div>
+    </section>
+</div>
+    
+    <script type="text/javascript" src="./js/comm.js"></script>
+    <script type="text/javascript">
+		$(function(){
+      var user,params={},pageFlag=true;
+			 new Vue({
+          data:{
+            data:[],
+            index:1,
+            maxPage:0
+          },
+          beforeCreate(){
+              user=sessionStorage.getItem("user");
+              if(!user){
+                window.location.href="login.html";
+              }else{
+                user=JSON.parse(user);
+              }
+              loading();
+          },
+          mounted(){
+            var _this=this;
+            ajaxComm({
+              url:"monthlyPlan.php",
+              params:{user_id:user.id},
+              success(data){
+                loadingRemove();
+               console.log(data);
+                _this.$data.data=data.data;
+                _this.$data.index=data.index;
+                _this.$data.maxPage=data.maxPage;
+                 params["user_id"]=user.id;
+                 _this.pageFn();
+              }
+            })
+          },
+          methods:{
+            formTime(a){
+                var d=new Date();
+                d.setTime(a*1000);
+                return d.getFullYear()+'-'+(d.getMonth()+1>9?(d.getMonth()+1):('0'+(d.getMonth()+1)))+'-'+(d.getDate()>9?d.getDate():('0'+d.getDate()));
+            },
+            addFn(){
+               loading();
+               ajaxComm({
+                  url:"monthlyPlan.php",
+                  params:{"type":"selectAdd","user_id":user.id},
+                  success(data){
+                       if(data.flg){
+                          window.location.href="monthlyPlanDetails.html?id="+data.id;
+                       }else{
+                          window.location.href="monthlyPlanAdd.html";
+                       }
+                  }
+                })
+           },searchFn(){
+                    var search=document.querySelector('input[name="search"]');
+                    var startValue=document.querySelector('input[name="startTime"]').value;
+                    var endValue=document.querySelector('input[name="endTime"]').value;
+                    if(!search.value&&!startValue&&!endValue){
+                        AlertFn({"cont":"搜索条件不能为空"});
+                            return false;
+                    }
+                    if(!!startValue&&!!endValue&&Date.parse(startValue)>=Date.parse(endValue)){
+                        AlertFn({"cont":"开始日期不能大于或等于结束日期"});
+                            return false;
+                    }
+                    params["index"]=1;
+                    params["search"]=search.value;
+                    params["startTime"]=startValue;
+                    params["endTime"]=endValue;
+                    var _this=this;
+                    ajaxComm({
+                        url:'monthlyPlan.php',
+                        params:params,
+                        success:function(listDate){
+                            _this.$data.data=listDate.data;
+                            _this.$data.index=listDate.index;
+                            _this.$data.maxPage=listDate.maxPage;
+                           
+                        }
+                    });
+
+                },
+                inpTime(_this){
+                    var _obj=_this.target;
+                    console.log(_obj.value);
+                    $span=$(_obj).siblings('p').find("span");
+                    !_obj.value?$span.html("请选择"):$span.html(_obj.value);
+                },
+              pageFn(){
+                var _this=this;
+                $(window).scroll(function(){
+                    if(pageFlag&&($(window).height()+$(window).scrollTop()>=$("body").outerHeight(true))){
+                        pageFlag=false;
+                        _this.$data.index++;
+                        if(_this.$data.index>_this.$data.maxPage)return false;
+                        params["index"]=_this.$data.index;
+                        loading();
+                        ajaxComm({
+                          url:'dailyPaper.php',
+                          params:params,
+                          success:function(listDate){
+                           listDate.data.forEach(function(v){
+                               _this.$data.data.push(v);
+                           })
+                            setTimeout(function(){
+                              loadingRemove();
+                              _this.$data.index=listDate.index
+                              _this.$data.maxPage=listDate.maxPage
+                              if(listDate.maxPage!=_this.$data.index){
+                                  pageFlag=true;
+                               }
+                            },0); 
+                          }
+
+                       });
+                    }
+                })
+              }
+          }          
+       }).$mount("#monthly");
+		});
+		
+	</script>
+</body>
+</html>
+

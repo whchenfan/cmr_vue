@@ -1,0 +1,124 @@
+<!doctype html>
+<html>
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=utf-8" >
+<meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,initial-scale=1.0,user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="format-detection" content="telephone=no">
+<meta name="format-detection" content="email=no">
+<link rel="stylesheet" type="text/css" href="style/comm.css" />
+<link rel="stylesheet" type="text/css" href="style/TomorrowPlan.css" />
+<script type="text/javascript" src="./js/jquery-2.1.4.min.js"></script>
+<script type="text/javascript" src="./js/vue.js"></script>
+<title>明天计划</title>
+</head>
+<body class="bg_FFF">
+    <div id="tomorrow">
+    <header class="comm-header">
+    	<div class="div"><h1><a href="javascript:history.back();" class="back"><i></i></a>明天计划<a v-if="flg" :href="'TomorrowPlanEdit.html?id='+data.id" class="comm-edit"></a></h1></div>
+    </header> 
+    <section class="details">
+    	<h2><i class="fr pj"></i><span><i class="icon_t"></i>{{formTime(data.create_time+"000")}}</span></h2>
+    	<div class="cont">{{data.remark}}</div>
+        <article class="pd1">
+            <div class="reply" v-if="data.postil_type==0">
+                批注：未批注
+            </div>
+            <div class="reply" v-else>
+                批注：{{data.postil}}
+            </div>
+        </article>
+
+        <button v-if="!flg" @click="showHidePostil()" type="button" class="btn-blur">{{data.postil_type==1?"修改":""}}批注</button>
+        <div class="mask" style="display: none">
+            <div class="mask-cont replay-cont">
+            
+                <h2>
+                    <span>写批注</span>
+                    <button @click="showHidePostil()" class="btn del" type="button">取消</button>
+                    <button  @click="submitPostil()" class="btn ensure" type="button">确定</button>
+                </h2>
+                <div class="pdlr_5 pdb_5">
+                    <textarea class="exte"></textarea>
+                </div>
+          
+            </div>
+        </div>
+    </section>
+    </div>
+    <script type="text/javascript" src="./js/comm.js"></script>
+    <script type="text/javascript">
+    $(function(){
+        var user,
+            id=GetQueryString("id");
+        new Vue({
+            data:{
+                data:[],
+                flg:false
+            },
+            beforeCreate(){
+                user=sessionStorage.getItem("user");
+                if(!user){window.location.href="login.html";}
+                if(!id){
+                    AlertFn({"cont":"您的数据有问题，请重新进入。",fn:function(){window.location.href="TomorrowPlanList.html";}})
+                    return false;
+                }
+                loading();
+                user=JSON.parse(user);
+            },mounted(){
+                var _this=this;
+                ajaxComm({
+                    url:"TomorrowPlan.php",
+                    params:{id:id,type:"select"},
+                    success:function(data){
+                        loadingRemove();
+                        _this.$data.data=data;
+                        _this.$data.flg=user.id==data.user_id;
+                    }
+                })
+            },methods:{
+                formTime(a){
+                      var d=new Date();
+                              d.setTime(a);
+                              return d.getFullYear()+'-'+(d.getMonth()+1>9?(d.getMonth()+1):('0'+(d.getMonth()+1)))+'-'+(d.getDate()>9?d.getDate():('0'+d.getDate()));
+                },
+                showHidePostil(){
+                    var mask=document.querySelector('.mask');
+                    if(mask.style.display=="none"){
+                        mask.style.display="block";
+                    }else{
+                       mask.style.display="none";  
+                    } 
+                },
+                submitPostil(){
+                    var _this=this,
+                       textarea=document.querySelector("textarea.exte");
+                    if(!textarea.value){
+                        textarea.focus();
+                        return false;
+                    }
+                    loading();
+                    ajaxComm({
+                        url:"TomorrowPlan.php",
+                        params:{id:id,type:"updatePostil","postil":textarea.value,"user_id":user.id},
+                        success:function(data){
+                            console.log(data.sql);
+                            loadingRemove();
+                            if(data.flg){
+                                AlertFn({"cont":"批注成功。",fn:function(){window.location.reload();}})
+                            }else{
+                                AlertFn({"cont":"批注失败。"});
+                            }
+                        }
+                    })
+                }
+            }
+
+        }).$mount("#tomorrow");
+
+    })
+
+    </script>
+</body>
+</html>
