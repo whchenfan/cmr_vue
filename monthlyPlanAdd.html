@@ -1,0 +1,109 @@
+<!doctype html>
+<html>
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=utf-8" >
+<meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,initial-scale=1.0,user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="format-detection" content="telephone=no">
+<meta name="format-detection" content="email=no">
+<link rel="stylesheet" type="text/css" href="style/comm.css" />
+<link rel="stylesheet" type="text/css" href="style/monthlyPlan.css" />
+<script type="text/javascript" src="./js/jquery-2.1.4.min.js"></script>
+<script type="text/javascript" src="./js/vue.js"></script>
+<title>添加月工作计划</title>
+</head>
+<body class="bg_FFF">
+<div id="monthly">
+    <header class="comm-header">
+    	<div class="div"><h1><a href="javascript:history.back();" class="back"><i></i></a>添加月工作计划</h1></div>
+    </header> 
+    <section class="deatails deatails-add pdlr1 pdb3">
+    	<form action="" method="post">
+    	<ul>
+    		
+            
+            <li>
+            	<label><span>*</span>计划洽谈量</label>
+                <input class="inp" name="planned_volume" type="number" value="" placeholder="请输入计划洽谈量">
+            </li>
+            <li>
+            	<label><span>*</span>计划签约量</label>
+                <input class="inp" name="planned_quantity" type="number" value="" placeholder="请输入计划签约量">
+            </li>
+            <li>
+            	<label><span>*</span>备注</label>
+                <textarea name="remark" class="area" placeholder="请输入您对这一个也工作计划的安排"></textarea>
+            </li>
+            
+    	</ul>
+        <button type="button" @click="submintFn()" class="btn-blur">添加</button>
+        </form>
+    </section>
+</div>
+    
+    <script type="text/javascript" src="./js/comm.js"></script>
+    <script type="text/javascript">
+		$(function(){
+            var user;
+			new Vue({
+                beforeCreate(){
+                    user=sessionStorage.getItem("user");
+                    if(!user){
+                        window.location.href="login.html";
+                    }else{
+                        user=JSON.parse(user);
+                    }
+                   
+                },
+                methods:{
+                    submintFn(){
+                        var params={};
+                        var inp=document.querySelectorAll("input"),
+                            textarea=document.querySelector("textarea"),
+                            btn=false;
+                        for(var i=0,maxl=inp.length;i<maxl;i++){
+                            var _value=inp[i].value,
+                                _name=inp[i].getAttribute("name");
+                            if(!_value){
+                                if(_name=="planned_volume"){
+                                    AlertFn({"cont":"计划洽谈量不能为空。"});
+                                }
+                                if(_name=="planned_quantity"){
+                                    AlertFn({"cont":"实际洽谈量不能为空。"});
+                                }
+                                btn=true;
+                                break;
+                            } 
+                            params[_name]=_value;   
+                        }
+                        if(btn)return false;
+                        if(!textarea.value){
+                             AlertFn({"cont":"备注不能为空。"});
+                             return false;
+                        }else{
+                            params[textarea.getAttribute("name")]=textarea.value;
+                        }
+                        params["type"]="submit";
+                        params["user_id"]=user.id;
+                        loading();
+                        ajaxComm({
+                            url:"monthlyPlan.php",
+                            params:params,
+                            success(data){
+                                if(data.flg){
+                                    AlertFn({"cont":"添加数据成功。"});
+                                }else{
+                                    AlertFn({"cont":"添加数据失败。"});
+                                }
+                            }
+                        });
+                    },
+
+                }
+            }).$mount("#monthly");
+		});
+	</script>
+</body>
+</html>
+

@@ -1,0 +1,91 @@
+用户信息表 admin
+   id 主键
+   login_time  登录时间
+   register_time  注册时间 
+   user_name    用户名
+   mobile    手机号码
+   power 权限  1普通用户 2组长 3经理 4总经理
+   department 所属部门
+
+部门 branch   
+id 部门
+branch_id
+branch_name 
+    
+客户信息表
+    id
+	user_id 客户所有者
+	contact_name 联系人姓名
+	contact_mobile 联系手机号码
+	contact_business 联系人职务
+	company_name 公司名称
+	contact_email 邮箱
+	contact_qq 邮箱
+	contact_wx 微信
+	source 客户来源
+	company_person 公司法人
+	company_number 公司人数
+	company_value 注册资金
+	contact_card 客户名片
+	address 地址
+	city 城市
+	affiliated_person  参与人
+	remark 备注
+    update_time 修改时间
+	create_time 添加时间
+
+日报表
+    id 
+	user_id 日报人
+	service_line 业务线
+	progress_situation 进展情况
+	communication_points沟通要点
+	cantract_type 沟通方式
+	affiliated_person 跟进人
+	customers_person 客户对接人
+	Intention_customer 意向客户
+	customer_type 客户状态
+	organization_number 机构编号
+	organization_name机构名称
+	customer_name客户名称
+	business_person 业务负责人
+	business_persons 业务相关人员
+	extension_type 拓展类型
+	create_time 创建日期
+	remark 备注
+	postil  批注
+明日计划
+    id
+	create_time 创建时间
+	update_time 
+	postil_time 
+	postil_type
+	postils
+	remark 工作类容
+	id_code WP2017051707261273890
+月计划
+	id
+	user_id
+	计划洽谈量 planned_volume
+	实际洽谈量 Actual_volume
+    计划签约量 planned_quantity 
+    实际签约量 actual_quantity 
+	渠道 channel
+	直营 not_channel
+    日志编号  monthly_id wp2017051812121212
+	创建时间 create_time
+	
+	remark 备注
+	
+	
+	
+	
+	
+	
+	
+   
+   
+   
+   
+   
+   

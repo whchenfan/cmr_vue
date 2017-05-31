@@ -1,0 +1,212 @@
+<!doctype html>
+<html>
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=utf-8" >
+<meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,initial-scale=1.0,user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="format-detection" content="telephone=no">
+<meta name="format-detection" content="email=no">
+<link rel="stylesheet" type="text/css" href="style/comm.css" />
+<link rel="stylesheet" type="text/css" href="style/dailyPaper.css" />
+<script type="text/javascript" src="./js/jquery-2.1.4.min.js"></script>
+<script type="text/javascript" src="./js/vue.js"></script>
+<title>工作日报</title>
+</head>
+<body >
+<div id="deily">
+    <header class="comm-header">
+    	<div class="div"><h1><a href="javascript:history.back();" class="back"><i></i></a>工作日报<a @click.prevent="addFn()" href="#" class="add"><i></i></a></h1></div>
+    </header> 
+    <section class="daily_paper">
+    	<nav class="bg_FFF">
+        	<div class="pdlr1 pdtb_5">
+            	<div class="comm_search">
+                    <input class="inp" type="text" name="search" value="" placeholder="输入添加人/公司名称/业务线等">
+                    <button class="icon comm_icon_search" type="button" @click="searchFn()"></button>
+           		 </div>
+			</div>
+            <ul	class="clearfix">
+                <li>
+                	<label>开始日期</label>
+                    <div class="name place_time">
+                    	<p><span></span><em class="time_inp"></em></p>
+                        <input name="startTime" @change="inpTime($event)" class="inp" type="date" value="" />
+                    </div>
+                </li>
+                <li>
+                	<label>结束日期</label>
+                    <div class="name place_time">
+                    	<p><span></span><em class="time_inp"></em></p>
+                        <input name="endTime" @change="inpTime($event)" class="inp" type="date" value=""  />
+                    </div>
+                </li>
+            </ul>
+        </nav>
+        <div class="cont" v-if="data&&data.length">
+        	<dl  v-for="(v,key) in data">
+            	<dt v-if='!key||formTime(v.create_time)!=formTime(data[key-1].create_time)'><i class="icon_t"></i>{{formTime(v.create_time)}}</dt>
+                <dd>
+                	<ul>
+                    	<a :href="'dailyPaperDetails.html?id='+v.id">
+                    	<li>
+                        	<div class="name">
+                            	<div class="t">
+                                	<p class="clearfix">
+                                    	<span class="fl"><label>联系人：</label><i>{{v.customers_person}}</i></span>
+                                        <span class="fr"><label>业务线：</label><i>{{v.service_line}}</i></span>
+                                    </p>
+                                    <p><label>意向客户：</label><i>{{v.company_name}}</i></p>
+                                </div>
+                                <div class="end clearfix">
+                                	<span class="fl"><label>进展情况：</label><em>{{v.progress_situation}}</em></span>
+                                    <span class="fr"><label>批注状态：</label><em>{{v.postil_type==0?"未批":"已批"}}</em></span>
+                                </div>
+                            </div>  
+                        </li>
+                        </a>
+                    </ul>
+                </dd>
+            </dl>
+        </div>
+         <div class="tp_add" v-else>
+            <a href="dailyPaperAdd.html">
+              <i class="icon_shu"></i>
+                <p>添加工作日报</p>
+            </a>
+         </div>
+    </section>
+</div>
+    <script type="text/javascript" src="./js/comm.js"></script>
+    <script type="text/javascript">
+		$(function(){
+			//$(".sel").selFn();
+			$(".place_time").inpTime();
+            var params={},user,pageFlag=true;
+            new Vue({
+                data:{
+                    data:[],
+                    index:1,
+                    maxPage:0
+                },
+                beforeCreate(){
+                    loading();
+                    if(!sessionStorage.getItem("user")){
+                       window.location.href="login.html";
+                       return false;
+                    }
+                    user=JSON.parse(sessionStorage.getItem("user"));
+
+                },
+                mounted(){
+                    var _this=this;             
+                    ajaxComm({
+                        url:"dailyPaper.php",
+                        params:{user_id:user.id,index:_this.$data.index},
+                        success:function(data){
+                            loadingRemove();
+                            _this.$data.data=data.data;
+                            _this.$data.index=data.index;
+                            _this.$data.maxPage=data.maxPage;
+                            params["index"]=_this.$data.index;
+                            params["user_id"]=user.id;
+                            _this.pageFn();
+                           
+                        }
+                    })
+
+                },
+                methods:{
+                    addFn(){
+                        loading();
+                        ajaxComm({
+                            url:"dailyPaper.php",
+                            params:{"type":"selectAdd","user_id":user.id},
+                            success:function(data){
+                               if(data.flg){
+                                  window.location.href="dailyPaperDetails.html?id="+data.id;
+                               }else{
+                                  
+                                  window.location.href="dailyPaperAdd.html";
+                               }
+
+                            }
+                        })
+                    },
+                    formTime(a){
+                      var d=new Date();
+                              d.setTime(a*1000);
+                              return d.getFullYear()+'-'+(d.getMonth()+1>9?(d.getMonth()+1):('0'+(d.getMonth()+1)))+'-'+(d.getDate()>9?d.getDate():('0'+d.getDate()));
+                    },
+                    searchFn(){
+                        var search=document.querySelector('input[name="search"]');
+                        var startValue=document.querySelector('input[name="startTime"]').value;
+                        var endValue=document.querySelector('input[name="endTime"]').value;
+                        if(!search.value&&!startValue&&!endValue){
+                            AlertFn({"cont":"搜索条件不能为空"});
+                                return false;
+                        }
+                        if(!!startValue&&!!endValue&&Date.parse(startValue)>=Date.parse(endValue)){
+                            AlertFn({"cont":"开始日期不能大于或等于结束日期"});
+                                return false;
+                        }
+                        params["index"]=1;
+                        params["search"]=search.value;
+                        params["startTime"]=startValue;
+                        params["endTime"]=endValue;
+                        var _this=this;
+                        ajaxComm({
+                            url:'dailyPaper.php',
+                            params:params,
+                            success:function(listDate){
+                                console.log(listDate.sql);
+                                _this.$data.data=listDate.data;
+                                _this.$data.index=listDate.index;
+                                _this.$data.maxPage=listDate.maxPage;
+                            }
+                        });
+
+                    },
+                    inpTime(_this){
+                        var _obj=_this.target;
+                        console.log(_obj.value);
+                        $span=$(_obj).siblings('p').find("span");
+                        !_obj.value?$span.html("请选择"):$span.html(_obj.value);
+                    },
+                    pageFn(){
+                      var _this=this;
+                      $(window).scroll(function(){
+                          if(pageFlag&&($(window).height()+$(window).scrollTop()>=$("body").outerHeight(true))){
+                              pageFlag=false;
+                              _this.$data.index++;
+                              if(_this.$data.index>_this.$data.maxPage)return false;
+                              params["index"]=_this.$data.index;
+                              loading();
+                              ajaxComm({
+                                url:'dailyPaper.php',
+                                params:params,
+                                success:function(listDate){
+                                 listDate.data.forEach(function(v){
+                                     _this.$data.data.push(v);
+                                 })
+                                  setTimeout(function(){
+                                    loadingRemove();
+                                    _this.$data.index=listDate.index
+                                    _this.$data.maxPage=listDate.maxPage
+                                    if(listDate.maxPage!=_this.$data.index){
+                                        pageFlag=true;
+                                     }
+                                  },0); 
+                                }
+
+                             });
+                          }
+                      })
+                    }
+                }    
+            }).$mount("#deily")
+
+		});
+	</script>
+</body>
+</html>

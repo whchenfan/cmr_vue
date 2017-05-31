@@ -1,0 +1,117 @@
+<!doctype html>
+<html>
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=utf-8" >
+<meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,initial-scale=1.0,user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="format-detection" content="telephone=no">
+<meta name="format-detection" content="email=no">
+<link rel="stylesheet" type="text/css" href="style/comm.css" />
+<link rel="stylesheet" type="text/css" href="style/CustomerInformation.css" />
+<script type="text/javascript" src="./js/jquery-2.1.4.min.js"></script> 
+<script type="text/javascript" src="./js/vue.js"></script> 
+<title>客户信息</title>
+</head>
+<body >
+<div id="demo">
+    <header class="comm-header">
+    	<div class="div"><h1><a href="javascript:history.back();" class="back"><i></i></a>客户信息<a v-if='flg' :href="'CustomerInformationEdit.html?id='+id" class="comm-edit"></a></h1></div>
+    </header> 
+    <section class="pdlr_5 deatails bg_FFF">
+        <div v-if="data&&data.id">
+    	<ul>
+        	
+            <li><label>联系人姓名</label><span>{{data.contact_name}}</span></li>
+            <li><label>公司名称</label><span>{{data.company_name}}</span></li>
+            <li><label>联系人电话</label><span>{{data.contact_mobile||''}}</span></li>
+            <li><label>联系人职务</label><span>{{data.contact_business||''}}</span></li>
+            <li><label>邮箱</label><span>{{data.contact_email||''}}</span></li>
+            <li><label>QQ</label><span>{{data.contact_qq||''}}</span></li>
+            <li><label>微信</label><span>{{data.contact_wx||''}}</span></li>
+            <li><label>客户来源</label><span>独立开发</span></li>
+            <li><label>公司法人</label><span>{{data.company_person||''}}</span></li>
+            <li><label>公司职员人数</label><span>{{data.company_number||''}}</span></li>
+            <li><label>注册资金(万)</label><span>{{data.company_value||''}}</span></li>
+            <li><label>城市</label><span>{{addressFn(data.province,data.city,data.district)}}</span></li>
+            <li><label>详情地址</label><span>{{data.address}}</span></li>
+            
+            <li><label>参与人</label><span>{{data.affiliated_person||''}}</span></li>
+			<li><label>备注</label><span>{{data.remark||''}}</span></li>
+        </ul>
+        </div>
+        <div v-else class="null-data">
+            没有查询到数据
+        </div>
+    </section>
+</div>
+    <script type="text/javascript" src="./js/comm.js"></script>
+    <script type="text/javascript" src="./js/city.js"></script>  
+    <script type="text/javascript">
+        $(function(){
+            var id=GetQueryString("id"),
+                user=GetQueryString("user"),
+                user_id; 
+            new Vue({
+                data:{
+                    flg:false,
+                    id:id,
+                    data:{}
+                },
+                beforeCreate(){
+                  //没有登录去登录页面
+                  if(!sessionStorage.getItem("user")){window.location.href="login.html";}else{
+                      user_id=JSON.parse(sessionStorage.getItem("user")).id;
+                      loading();
+                     }
+                },
+                mounted(){
+                    id=GetQueryString("id");
+                    var _this=this;
+                    ajaxComm({
+                        url:"CustomerInformation.php",
+                        params:{id:id,type:"details"},
+                        success:function(data){
+                             loadingRemove();
+                            _this.$data.flg=(user_id==user);
+                            _this.$data.data=data;
+
+                        }
+                    })
+                },
+                methods:{
+                    addressFn(a,b,c){
+                        var province,provinceCode,city='',cityCode,district='';
+                        ChineseDistricts['Province'].forEach(function(val,i){
+                            if(val.code==a){
+                                province=val.address;
+                                provinceCode=val.code;
+                            }
+                        })
+                        if(provinceCode){
+                            ChineseDistricts[provinceCode].forEach(function(val){
+                                if(val.code==b){
+                                city=val.address;
+                                cityCode=val.code;
+                               }
+                            })
+
+                        }
+                        if(cityCode){
+                            province+=","+city;
+                             ChineseDistricts[cityCode].forEach(function(val){
+                              if(val.code==c){
+                                district=val. address;
+                                }
+                            })
+                        }
+                        if(cityCode)province+=','+district
+                       return province;
+                    }
+                }
+            }).$mount("#demo")
+
+        });
+    </script>
+</body>
+</html>
